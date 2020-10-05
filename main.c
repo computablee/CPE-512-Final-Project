@@ -6,21 +6,21 @@
 #include <math.h>
 #include <stdio.h>
 
-inline int op(int a, int b, int c)
+inline float op(float a, float b, float c)
 {
 	return a * b + c;
 }
 
 int main()
 {
-	int *a, *b, *c, *d;
+	float *a, *b, *c, *d;
 	int err = 0;
 	//char mychar;
 	
-	err |= posix_memalign((void**)&a, 32, 1024l * 1024l * 1024l * sizeof(int));
-	err |= posix_memalign((void**)&b, 32, 1024l * 1024l * 1024l * sizeof(int));
-	err |= posix_memalign((void**)&c, 32, 1024l * 1024l * 1024l * sizeof(int));
-	err |= posix_memalign((void**)&d, 32, 1024l * 1024l * 1024l * sizeof(int));
+	err |= posix_memalign((void**)&a, 32, 1024l * 1024l * 1024l * sizeof(float));
+	err |= posix_memalign((void**)&b, 32, 1024l * 1024l * 1024l * sizeof(float));
+	err |= posix_memalign((void**)&c, 32, 1024l * 1024l * 1024l * sizeof(float));
+	err |= posix_memalign((void**)&d, 32, 1024l * 1024l * 1024l * sizeof(float));
 	
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wunused-result"
@@ -43,9 +43,9 @@ int main()
 		for (long long i = 0; i < 1024l * 1024l * 1024l; i++)
 		{
 			//printf("here %d\n", i);
-			a[i] = rand_r(&seed);
-			b[i] = rand_r(&seed);
-			c[i] = rand_r(&seed);
+			a[i] = (float)rand_r(&seed) / (float)RAND_MAX;
+			b[i] = (float)rand_r(&seed) / (float)RAND_MAX;
+			c[i] = (float)rand_r(&seed) / (float)RAND_MAX;
 		}
 	}
 	
@@ -64,7 +64,7 @@ int main()
 	
 	double cpudur = omp_get_wtime();
 	
-	#pragma omp parallel for num_threads(32)
+	#pragma omp parallel for
 	for (long long i = 0; i < 1024l * 1024l * 1024l; i++)
 	{
 		d[i] = op(a[i], b[i], c[i]);
