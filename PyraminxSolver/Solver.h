@@ -7,4 +7,4 @@ char* createAssociations(const char* sidesUsed);
 void convertMoves(char* numb, const char* associations);
 bool solved(Puzzle pyra);
 void outputSolution(const char* solution);
-inline void performSolve(char* solvestr, Puzzle pyra);
+inline void performSolve(char* solvestr, Puzzle* pyra);
