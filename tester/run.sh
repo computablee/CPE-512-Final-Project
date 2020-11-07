@@ -1,2 +1,2 @@
 #!/bin/bash
-cat inputs | ../Program > outputs
+cat inputs | ../Program | tee outputs
