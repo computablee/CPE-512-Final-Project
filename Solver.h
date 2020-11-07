@@ -9,4 +9,4 @@ void convertMoves(char* numb, const char* associations);
 bool solved(Puzzle pyra);
 void outputSolution(const char* solution);
 inline void performSolve(char* solvestr, Puzzle* pyra);
-void convertBase(int numb, char* outp, int base);
+void convertBase(long long int numb, char* outp, int base);

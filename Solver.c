@@ -163,7 +163,7 @@ inline void performSolve(char* solvestr, Puzzle* temppyra)
 //3. input is positive
 //I meet all of these conditions in this program, so this algorithm is very concise
 //comments omitted because I feel it's a relatively self-explanatory base conversion function that needs no further explanation
-void convertBase(int numb, char* outp, int base)
+void convertBase(long long int numb, char* outp, int base)
 {
 	int pos = 0;
 	if (numb == 0)
@@ -174,7 +174,7 @@ void convertBase(int numb, char* outp, int base)
 	}
 	while (numb > 0)
 	{
-		sprintf(&outp[pos], "%d", numb % base);
+		sprintf(&outp[pos], "%lld", numb % base);
 		numb -= numb % base;
 		numb /= base;
 		pos++;
@@ -193,7 +193,7 @@ void solvePuzzle(Puzzle pyra, int maxMoves, const char* sidesUsed)
 	#pragma omp parallel firstprivate(pyra) shared(maxMoves, sidesUsed, associations)
 	{
 		bool in_length = true; //boolean to check if we're under or equal to the maximum algorithm length
-		int turn = omp_get_thread_num(); //get the thread number. this will be used to calculate an algorithm
+		long long int turn = (long long int)omp_get_thread_num(); //get the thread number. this will be used to calculate an algorithm
 		int oldlen = 0; //old algorithm length (for debugging purposes)
 		
 		//while we're under or equal to maximum algorithm length
@@ -244,7 +244,7 @@ void solvePuzzle(Puzzle pyra, int maxMoves, const char* sidesUsed)
 			}
 
 			//add the number of threads
-			turn += omp_get_num_threads();
+			turn += (long long int)omp_get_num_threads();
 		}
 	}
 
