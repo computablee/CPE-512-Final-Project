@@ -1,19 +1,23 @@
 #pragma once
+//enum of colors
 typedef enum
 {
 	Green, Blue, Yellow, Red, Blank
 } Color;
 
+//type of edge
 typedef struct
 {
 	Color color;
 } Edge;
 
+//type of center
 typedef struct
 {
 	Color color;
 } Center;
 
+//type of side (3 centers, 3 edges)
 typedef struct
 {
 	Center top;
@@ -24,6 +28,7 @@ typedef struct
 	Edge bottom_e;
 } Side;
 
+//type of puzzle (4 sides)
 typedef struct
 {
 	Side f;
@@ -32,7 +37,7 @@ typedef struct
 	Side d;
 } Puzzle;
 
-
+//see Pyra.c for explanations of all of these functions
 inline void rotateEdges(Edge* edge1, Edge* edge2, Edge* edge3);
 inline void rotateCenters(Center* center1, Center* center2, Center* center3);
 void l(Puzzle* pyra);
