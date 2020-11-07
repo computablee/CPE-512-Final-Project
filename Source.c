@@ -6,7 +6,7 @@
 Color getColor()
 {
 	char c;
-	scanf_s(" %c", &c, sizeof(char));
+	scanf(" %c", &c);
 	c = (char)tolower((int)c);
 
 	if (c == 'r')
@@ -62,20 +62,20 @@ int main()
 	do
 	{
 		printf("Enter the maximum number of moves for the algorithm:\n");
-		scanf_s("%d", &maxMoves);
+		scanf("%d", &maxMoves);
 
 		printf("Enter the sides allowed for the algorithm [lrub]:\n");
-		scanf_s("%s", sidesUsed, sizeof(char) * 5);
+		scanf("%s", sidesUsed);
 
 		solvePuzzle(pyra, maxMoves, sidesUsed);
 
 		printf("Generated all algorithms.\n");
 
 		printf("Try again? (y/n)\n");
-		scanf_s(" %c", &tryagain, sizeof(char));
+		scanf(" %c", &tryagain);
 	} while (tryagain == 'y');
 
 	char garbage;
-	scanf_s("%c", &garbage, sizeof(char));
+	scanf("%c", &garbage);
 	return 0;
 }

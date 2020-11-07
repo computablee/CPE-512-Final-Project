@@ -71,28 +71,28 @@ void outputSolution(const char* solution)
 		switch(solution[i])
 		{
 		case 'l':
-			strcat_s(outp, size, "L ");
+			strcat(outp, "L ");
 			break;
 		case 'L':
-			strcat_s(outp, size, "L' ");
+			strcat(outp, "L' ");
 			break;
 		case 'u':
-			strcat_s(outp, size, "U ");
+			strcat(outp, "U ");
 			break;
 		case 'U':
-			strcat_s(outp, size, "U' ");
+			strcat(outp, "U' ");
 			break;
 		case 'r':
-			strcat_s(outp, size, "R ");
+			strcat(outp, "R ");
 			break;
 		case 'R':
-			strcat_s(outp, size, "R' ");
+			strcat(outp, "R' ");
 			break;
 		case 'b':
-			strcat_s(outp, size, "B ");
+			strcat(outp, "B ");
 			break;
 		case 'B':
-			strcat_s(outp, size, "B' ");
+			strcat(outp, "B' ");
 			break;
 		default:
 			break;
@@ -154,7 +154,7 @@ void solvePuzzle(Puzzle pyra, int maxMoves, const char* sidesUsed)
 		{
 			Puzzle temppyra = pyra;
 			char baseXstr[100];
-			_itoa_s(turn, baseXstr, 100, (int)strlen(sidesUsed) * 2);
+			itoa(turn, baseXstr, (int)strlen(sidesUsed) * 2);
 #ifdef DEBUG
 			if (oldlen < (int)strlen(baseXstr))
 			{
