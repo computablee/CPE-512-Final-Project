@@ -64,6 +64,8 @@ void outputSolution(const char* solution)
 {
 	const size_t size = sizeof(char) * strlen(solution) * 3 + 1;
 	char* outp = (char*)malloc(size);
+	if (outp == NULL)
+		return;
 	outp[0] = 0;
 
 	for (int i = 0; (unsigned int)i < strlen(solution); i++)
@@ -141,6 +143,25 @@ inline void performSolve(char* solvestr, Puzzle* temppyra)
 		outputSolution(solvestr);
 }
 
+void convertBase(int numb, char* outp, int base)
+{
+	int pos = 0;
+	if (numb == 0)
+	{
+		outp[0] = '0';
+		outp[1] = 0;
+		return;
+	}
+	while (numb > 0)
+	{
+		sprintf(&outp[pos], "%d", numb % base);
+		numb -= numb % base;
+		numb /= base;
+		pos++;
+	}
+	outp[pos] = 0;
+}
+
 void solvePuzzle(Puzzle pyra, int maxMoves, const char* sidesUsed)
 {
 	char* associations = createAssociations(sidesUsed);
@@ -154,7 +175,8 @@ void solvePuzzle(Puzzle pyra, int maxMoves, const char* sidesUsed)
 		{
 			Puzzle temppyra = pyra;
 			char baseXstr[100];
-			itoa(turn, baseXstr, (int)strlen(sidesUsed) * 2);
+			convertBase(turn, baseXstr, (int)strlen(sidesUsed) * 2);
+			
 #ifdef DEBUG
 			if (oldlen < (int)strlen(baseXstr))
 			{
@@ -175,10 +197,10 @@ void solvePuzzle(Puzzle pyra, int maxMoves, const char* sidesUsed)
 #endif
 
 			performSolve(baseXstr, &temppyra);
-			if (baseXstr[0] == 'L')
+			if (baseXstr[strlen(baseXstr) - 1] == 'L')
 			{
 				temppyra = pyra;
-				baseXstr[0] = 'l';
+				baseXstr[strlen(baseXstr) - 1] = 'l';
 				performSolve(baseXstr, &temppyra);
 			}
 
