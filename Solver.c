@@ -189,8 +189,8 @@ void solvePuzzle(Puzzle* pyra, int maxMoves, const char* sidesUsed)
 	char* associations = createAssociations(sidesUsed);
 	
 	//spawn threads
-	//we create a local copy of pyra for each thread so they're not fighting over memory, but everything else is shared
-	#pragma omp parallel firstprivate(pyra) shared(maxMoves, sidesUsed, associations)
+	//we create a local copy everything so that we don't fight over memory
+	#pragma omp parallel firstprivate(pyra, maxMoves, sidesUsed, associations)
 	{
 		bool in_length = true; //boolean to check if we're under or equal to the maximum algorithm length
 		long long int turn = (long long int)omp_get_thread_num(); //get the thread number. this will be used to calculate an algorithm
