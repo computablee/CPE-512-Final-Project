@@ -39,28 +39,28 @@ void convertMoves(char* numb, const char* associations)
 }
 
 //checks if the puzzle is solved
-bool solved(Puzzle pyra)
+bool solved(Puzzle* pyra)
 {
-	return pyra.f.top.color == pyra.f.left.color && //check if the front face is a solid color
-		pyra.f.top.color == pyra.f.right.color &&
-		pyra.f.top.color == pyra.f.left_e.color &&
-		pyra.f.top.color == pyra.f.right_e.color &&
-		pyra.f.top.color == pyra.f.bottom_e.color &&
-		pyra.l.top.color == pyra.l.left.color && //check if the left face is a solid color
-		pyra.l.top.color == pyra.l.right.color &&
-		pyra.l.top.color == pyra.l.left_e.color &&
-		pyra.l.top.color == pyra.l.right_e.color &&
-		pyra.l.top.color == pyra.l.bottom_e.color &&
-		pyra.r.top.color == pyra.r.left.color && //check if the right face is a solid color
-		pyra.r.top.color == pyra.r.right.color &&
-		pyra.r.top.color == pyra.r.left_e.color &&
-		pyra.r.top.color == pyra.r.right_e.color &&
-		pyra.r.top.color == pyra.r.bottom_e.color &&
-		pyra.d.top.color == pyra.d.left.color && //check if the down face is a solid color
-		pyra.d.top.color == pyra.d.right.color &&
-		pyra.d.top.color == pyra.d.left_e.color &&
-		pyra.d.top.color == pyra.d.right_e.color &&
-		pyra.d.top.color == pyra.d.bottom_e.color;
+	return pyra->f.top.color == pyra->f.left.color && //check if the front face is a solid color
+		pyra->f.top.color == pyra->f.right.color &&
+		pyra->f.top.color == pyra->f.left_e.color &&
+		pyra->f.top.color == pyra->f.right_e.color &&
+		pyra->f.top.color == pyra->f.bottom_e.color &&
+		pyra->l.top.color == pyra->l.left.color && //check if the left face is a solid color
+		pyra->l.top.color == pyra->l.right.color &&
+		pyra->l.top.color == pyra->l.left_e.color &&
+		pyra->l.top.color == pyra->l.right_e.color &&
+		pyra->l.top.color == pyra->l.bottom_e.color &&
+		pyra->r.top.color == pyra->r.left.color && //check if the right face is a solid color
+		pyra->r.top.color == pyra->r.right.color &&
+		pyra->r.top.color == pyra->r.left_e.color &&
+		pyra->r.top.color == pyra->r.right_e.color &&
+		pyra->r.top.color == pyra->r.bottom_e.color &&
+		pyra->d.top.color == pyra->d.left.color && //check if the down face is a solid color
+		pyra->d.top.color == pyra->d.right.color &&
+		pyra->d.top.color == pyra->d.left_e.color &&
+		pyra->d.top.color == pyra->d.right_e.color &&
+		pyra->d.top.color == pyra->d.bottom_e.color;
 }
 
 //converts the internal string used to represent an algorithm to a nice pretty formatted user-readable string
@@ -152,7 +152,7 @@ inline void performSolve(char* solvestr, Puzzle* temppyra)
 	}
 
 	//if solved, output solution in a human-readable format
-	if (solved(*temppyra))
+	if (solved(temppyra))
 		outputSolution(solvestr);
 }
 
@@ -183,7 +183,7 @@ void convertBase(long long int numb, char* outp, int base)
 }
 
 //solve the puzzle
-void solvePuzzle(Puzzle pyra, int maxMoves, const char* sidesUsed)
+void solvePuzzle(Puzzle* pyra, int maxMoves, const char* sidesUsed)
 {
 	//create the array of associations
 	char* associations = createAssociations(sidesUsed);
@@ -200,7 +200,7 @@ void solvePuzzle(Puzzle pyra, int maxMoves, const char* sidesUsed)
 		while (in_length)
 		{
 			//create a temporary pyraminx to perform an algorithm on
-			Puzzle temppyra = pyra;
+			Puzzle temppyra = *pyra;
 			//convert the turn variable to an base N integer (where N is the number of possible turns we can make)
 			char baseXstr[100];
 			convertBase(turn, baseXstr, (int)strlen(sidesUsed) * 2);
@@ -238,7 +238,7 @@ void solvePuzzle(Puzzle pyra, int maxMoves, const char* sidesUsed)
 			//this is a hack to make sure we're exhausting the totality of the solution space
 			if (baseXstr[strlen(baseXstr) - 1] == associations[1])
 			{
-				temppyra = pyra;
+				temppyra = *pyra;
 				baseXstr[strlen(baseXstr) - 1] = associations[0];
 				performSolve(baseXstr, &temppyra);
 			}

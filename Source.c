@@ -76,7 +76,7 @@ int main()
 		scanf("%s", sidesUsed);
 
 		//generate the algorithms
-		solvePuzzle(pyra, maxMoves, sidesUsed);
+		solvePuzzle(&pyra, maxMoves, sidesUsed);
 
 		//alert that we've generated all the algorithms and prompt the user to try again
 		printf("Generated all algorithms.\n");
