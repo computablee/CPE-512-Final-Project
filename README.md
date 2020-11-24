@@ -5,11 +5,23 @@ This is a Pyraminx solver (but can be more generally used as a Pyraminx algorith
 
 ## Inputting the puzzle
 
-The puzzle is inputted a sticker at a time in the following order:
+The puzzle is either inputted a sticker at a time, or a scramble is inputted. In neither case does the solver solve tips, since that is a trivial step that just makes more work for me. Only the centers and edges are solved.
+
+### Inputting a puzzle permutation
+
+Input the stickers in the following order:
 
 ![Input order](pyra_order.png)
 
 Input single characters, lowercase. `r`=Red, `g`=Green, `b`=Blue, and `y`=Yellow. The orientation of the puzzle does not matter, so if you want to input with blue as the F face and red as the D face, the solver will not be hindered.
+
+### Inputting a scramble
+
+Inputting a scramble is simple, simply input the scramble in standard WCA format, terminated by a space and an exclamation mark. For example:
+
+```
+U B R' L' U R' U' L' U !
+```
 
 ## Maximum move count
 
