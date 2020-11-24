@@ -1,2 +1,2 @@
 #!/bin/bash
-cat inputs | ../Program | tee outputs
+cat inputs | stdbuf -o 0 ../Program | tee outputs
