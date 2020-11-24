@@ -113,49 +113,6 @@ void outputSolution(const char* solution)
 	free(outp); //free
 }
 
-//performs a solve based on a puzzle and a solve string
-inline void performSolve(char* solvestr, Puzzle* temppyra)
-{
-	//iterate through the solve string
-	for (int i = 0; (unsigned int)i < strlen(solvestr); i++)
-	{
-		//perform the moves
-		switch (solvestr[i])
-		{
-		case 'l':
-			l(temppyra);
-			break;
-		case 'L':
-			lp(temppyra);
-			break;
-		case 'u':
-			u(temppyra);
-			break;
-		case 'U':
-			up(temppyra);
-			break;
-		case 'r':
-			r(temppyra);
-			break;
-		case 'R':
-			rp(temppyra);
-			break;
-		case 'b':
-			b(temppyra);
-			break;
-		case 'B':
-			bp(temppyra);
-			break;
-		default:
-			break;
-		}
-	}
-
-	//if solved, output solution in a human-readable format
-	if (solved(temppyra))
-		outputSolution(solvestr);
-}
-
 //converts an integer to a base N integer
 //this works in 3 conditions:
 //1. you don't mind the output being in reverse order (so 10 to base 8 is 21 not 12)
@@ -174,7 +131,7 @@ void convertBase(long long int numb, char* outp, int base)
 	}
 	while (numb > 0)
 	{
-		sprintf(&outp[pos], "%lld", numb % base);
+		outp[pos] = (numb % base) + 48;
 		numb -= numb % base;
 		numb /= base;
 		pos++;
