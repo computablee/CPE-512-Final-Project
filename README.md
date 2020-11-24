@@ -29,7 +29,7 @@ The maximum move count lets the solver know when to stop searching for moves. In
 
 ## Axes permitted
 
-You can restrict the axes that the solver is allowed to turn for a solve. For <LUR> 3-gen, enter `lur`. The order does not matter, so `rul` or `lru` also work.
+You can restrict the axes that the solver is allowed to turn for a solve. For \<LUR\> 3-gen, enter `lur`. The order does not matter, so `rul` or `lru` also work.
 
 ## Maximum Thread Count
 
