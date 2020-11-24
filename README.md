@@ -18,3 +18,7 @@ The maximum move count lets the solver know when to stop searching for moves. In
 ## Axes permitted
 
 You can restrict the axes that the solver is allowed to turn for a solve. For <LUR> 3-gen, enter `lur`. The order does not matter, so `rul` or `lru` also work.
+
+## Maximum Thread Count
+
+The program relies on massive parallelism to run fast, due to its implementation of a parallel BFS to find solutions instead of any sort of heuristic function. Because of this, by default, the program will consume 100% of your CPU time in order to find solutions. You can set an upper bound to the number of threads used. Input `0` to use the default number (max available). Input any other non-negative scalar to use that number of hardware threads.
