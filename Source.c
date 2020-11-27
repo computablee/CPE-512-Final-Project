@@ -155,10 +155,14 @@ int main()
 			omp_set_num_threads(maxThreads);
 
 		//generate the algorithms
+		double start = omp_get_wtime();
 		solvePuzzle(&pyra, maxMoves, sidesUsed);
+		double elapsed = omp_get_wtime() - start;
 
 		//alert that we've generated all the algorithms and prompt the user to try again
 		printf("Generated all algorithms.\n");
+
+		printf("Elapsed time: %lf seconds.\n", elapsed);
 
 		printf("Try again? (y/n)\n");
 		scanf(" %c", &tryagain);
