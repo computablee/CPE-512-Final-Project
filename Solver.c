@@ -6,6 +6,7 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <x86intrin.h>
 //#define DEBUG
 //#define HARDDEBUG
 
@@ -76,7 +77,6 @@ void convertMoves(char* numb, const char* associations)
 {
 	int len = strlen(numb);
 	
-	#pragma omp simd
 	for (int i = 0; i < len; i++)
 		numb[i] = associations[numb[i] - 48];
 }
@@ -211,6 +211,7 @@ void convertBase(long long int numb, char* outp, int base)
 			}
 			break;
 	}
+	
 	outp[pos] = 0;
 }
 
@@ -238,7 +239,9 @@ void solvePuzzle(Puzzle* pyra, int maxMoves, const char* sidesUsed)
 	{
 		bool in_length = true; //boolean to check if we're under or equal to the maximum algorithm length
 		long long int turn = (long long int)omp_get_thread_num(); //get the thread number. this will be used to calculate an algorithm
+#ifdef DEBUG
 		int oldlen = 0; //old algorithm length (for debugging purposes)
+#endif
 		
 		long long int num_threads = omp_get_num_threads();
 		
