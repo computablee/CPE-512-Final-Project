@@ -20,12 +20,12 @@ typedef struct
 //type of side (3 centers, 3 edges)
 typedef struct
 {
-	Center top __attribute__ ((aligned(64)));
-	Center left __attribute__ ((aligned(64)));
-	Center right __attribute__ ((aligned(64)));
-	Edge left_e __attribute__ ((aligned(64)));
-	Edge right_e __attribute__ ((aligned(64)));
-	Edge bottom_e __attribute__ ((aligned(64)));
+	Center top;
+	Center left;
+	Center right;
+	Edge left_e;
+	Edge right_e;
+	Edge bottom_e;
 } Side;
 
 //type of puzzle (4 sides)
