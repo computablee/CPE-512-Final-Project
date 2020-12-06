@@ -291,6 +291,7 @@ void solvePuzzle(Puzzle* pyra, int maxMoves, const char* sidesUsed)
 				oldlen = algLen;
 			}
 #endif
+			
 			//if we've exceeded maximum algorithm length, break
 			if (algLen > maxMoves)
 				break;
@@ -299,33 +300,43 @@ void solvePuzzle(Puzzle* pyra, int maxMoves, const char* sidesUsed)
 			convertMoves(baseXstr, associations);
 			
 			//if the solve contains redundant moves like X X' or X X X, then ignore and continue
-			if (isRedundant(baseXstr))
+			if (!isRedundant(baseXstr))
+			{
+#ifdef HARDDEBUG
+				//if we're SERIOUSLY debugging this program, output the algorithm we're trying
+				printf("Trying algorithm: %s\n", baseXstr);
+#endif
+				
+				//perform the solve
+				performSolve(baseXstr, &temppyra);
+				
+				if (baseXstr[algLen - 1] != associations[1])
+				{
+					//add the number of threads
+					turn += num_threads;
+					continue;
+				}
+				else
+				{
+					//this condition is because base N integers can NEVER start with a 0 (or end in a 0, since my base converter outputs mirrored)
+					//because of this, algorithms can never end in certain moves (the move associated with the number 0)
+					//this is a hack to make sure we're exhausting the totality of the solution space
+					temppyra = *pyra;
+					baseXstr[algLen - 1] = associations[0];
+					performSolve(baseXstr, &temppyra);
+					
+					//add the number of threads
+					turn += num_threads;
+					continue;
+				}
+			}
+			else
 			{
 				//add the number of threads
 				turn += num_threads;
 				//continue searching
 				continue;
 			}
-
-#ifdef HARDDEBUG
-			//if we're SERIOUSLY debugging this program, output the algorithm we're trying
-			printf("Trying algorithm: %s\n", baseXstr);
-#endif
-
-			//perform the solve
-			performSolve(baseXstr, &temppyra);
-			//this condition is because base N integers can NEVER start with a 0 (or end in a 0, since my base converter outputs mirrored)
-			//because of this, algorithms can never end in certain moves (the move associated with the number 0)
-			//this is a hack to make sure we're exhausting the totality of the solution space
-			if (baseXstr[algLen- 1] == associations[1])
-			{
-				temppyra = *pyra;
-				baseXstr[algLen - 1] = associations[0];
-				performSolve(baseXstr, &temppyra);
-			}
-
-			//add the number of threads
-			turn += num_threads;
 		}
 	}
 
