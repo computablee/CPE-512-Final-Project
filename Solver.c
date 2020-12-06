@@ -10,6 +10,111 @@
 //#define DEBUG
 //#define HARDDEBUG
 
+
+//this function creates the association between integers of base N and moves, where N is the total number of moves that can be applied to the puzzle (inclusive of both CW and CCW rotations)
+char* createAssociations(const char* sidesUsed)
+{
+	size_t len = sizeof(char) * strlen(sidesUsed) * 2 + 1;
+	char* res = (char*)malloc(len);
+	if (res == NULL)
+		return NULL; //check for bad allocation
+	
+	for (char c = sidesUsed[0], i = 0; (unsigned int)i < strlen(sidesUsed); c = sidesUsed[(int)++i])
+	{
+		res[2 * i] = c; //set the nth element of res to the CW move
+		res[2 * i + 1] = (char)toupper(c); //set the nth+1 element to the CCW move
+	}
+
+	res[2 * strlen(sidesUsed)] = 0; //null-terminate so we can do strlen later
+
+	return res; //return the pointer
+}
+
+//converts the internal string used to represent an algorithm to a nice pretty formatted user-readable string
+//this uses standard WCA algorithmic notation for pyraminxes
+void outputSolution(const char* solution)
+{
+	int len = strlen(solution);
+	//create a buffer
+	const size_t size = sizeof(char) * len * 3 + 1;
+	char* outp = (char*)malloc(size);
+	if (outp == NULL)
+		return; //if the allocation failed, return
+	outp[0] = 0; //set to null-terminated
+
+	for (int i = 0; i < len; i++)
+	{
+		//convert internal moves to more human-readable moves
+		switch(solution[i])
+		{
+			case 'l':
+				strcat(outp, "L ");
+				break;
+			case 'L':
+				strcat(outp, "L' ");
+				break;
+			case 'u':
+				strcat(outp, "U ");
+				break;
+			case 'U':
+				strcat(outp, "U' ");
+				break;
+			case 'r':
+				strcat(outp, "R ");
+				break;
+			case 'R':
+				strcat(outp, "R' ");
+				break;
+			case 'b':
+				strcat(outp, "B ");
+				break;
+			case 'B':
+				strcat(outp, "B' ");
+				break;
+			default:
+				break;
+		}
+	}
+	
+	//print the algorithm
+	printf("Found solution: %s\n", outp);
+	free(outp); //free
+}
+
+//this converts a base N integer to a sequence of moves to apply to the pyraminx, based on the associations string
+void convertMoves(char* numb, const char* associations)
+{
+	int len = strlen(numb);
+	
+	for (int i = 0; i < len; i++)
+		numb[i] = associations[numb[i] - 48];
+}
+
+//checks if the puzzle is solved
+bool solved(Puzzle* pyra)
+{
+	return pyra->f.top.color == pyra->f.left.color && //check if the front face is a solid color
+		pyra->f.top.color == pyra->f.right.color &&
+		pyra->f.top.color == pyra->f.left_e.color &&
+		pyra->f.top.color == pyra->f.right_e.color &&
+		pyra->f.top.color == pyra->f.bottom_e.color &&
+		pyra->l.top.color == pyra->l.left.color && //check if the left face is a solid color
+		pyra->l.top.color == pyra->l.right.color &&
+		pyra->l.top.color == pyra->l.left_e.color &&
+		pyra->l.top.color == pyra->l.right_e.color &&
+		pyra->l.top.color == pyra->l.bottom_e.color &&
+		pyra->r.top.color == pyra->r.left.color && //check if the right face is a solid color
+		pyra->r.top.color == pyra->r.right.color &&
+		pyra->r.top.color == pyra->r.left_e.color &&
+		pyra->r.top.color == pyra->r.right_e.color &&
+		pyra->r.top.color == pyra->r.bottom_e.color &&
+		pyra->d.top.color == pyra->d.left.color && //check if the down face is a solid color
+		pyra->d.top.color == pyra->d.right.color &&
+		pyra->d.top.color == pyra->d.left_e.color &&
+		pyra->d.top.color == pyra->d.right_e.color &&
+		pyra->d.top.color == pyra->d.bottom_e.color;
+}
+
 //performs a solve based on a puzzle and a solve string
 void performSolve(char* solvestr, Puzzle* temppyra)
 {
@@ -53,109 +158,6 @@ void performSolve(char* solvestr, Puzzle* temppyra)
 		outputSolution(solvestr);
 }
 
-//this function creates the association between integers of base N and moves, where N is the total number of moves that can be applied to the puzzle (inclusive of both CW and CCW rotations)
-char* createAssociations(const char* sidesUsed)
-{
-	size_t len = sizeof(char) * strlen(sidesUsed) * 2 + 1;
-	char* res = (char*)malloc(len);
-	if (res == NULL)
-		return NULL; //check for bad allocation
-	
-	for (char c = sidesUsed[0], i = 0; (unsigned int)i < strlen(sidesUsed); c = sidesUsed[(int)++i])
-	{
-		res[2 * i] = c; //set the nth element of res to the CW move
-		res[2 * i + 1] = (char)toupper(c); //set the nth+1 element to the CCW move
-	}
-
-	res[2 * strlen(sidesUsed)] = 0; //null-terminate so we can do strlen later
-
-	return res; //return the pointer
-}
-
-//this converts a base N integer to a sequence of moves to apply to the pyraminx, based on the associations string
-void convertMoves(char* numb, const char* associations)
-{
-	int len = strlen(numb);
-	
-	for (int i = 0; i < len; i++)
-		numb[i] = associations[numb[i] - 48];
-}
-
-//checks if the puzzle is solved
-bool solved(Puzzle* pyra)
-{
-	return pyra->f.top.color == pyra->f.left.color && //check if the front face is a solid color
-		pyra->f.top.color == pyra->f.right.color &&
-		pyra->f.top.color == pyra->f.left_e.color &&
-		pyra->f.top.color == pyra->f.right_e.color &&
-		pyra->f.top.color == pyra->f.bottom_e.color &&
-		pyra->l.top.color == pyra->l.left.color && //check if the left face is a solid color
-		pyra->l.top.color == pyra->l.right.color &&
-		pyra->l.top.color == pyra->l.left_e.color &&
-		pyra->l.top.color == pyra->l.right_e.color &&
-		pyra->l.top.color == pyra->l.bottom_e.color &&
-		pyra->r.top.color == pyra->r.left.color && //check if the right face is a solid color
-		pyra->r.top.color == pyra->r.right.color &&
-		pyra->r.top.color == pyra->r.left_e.color &&
-		pyra->r.top.color == pyra->r.right_e.color &&
-		pyra->r.top.color == pyra->r.bottom_e.color &&
-		pyra->d.top.color == pyra->d.left.color && //check if the down face is a solid color
-		pyra->d.top.color == pyra->d.right.color &&
-		pyra->d.top.color == pyra->d.left_e.color &&
-		pyra->d.top.color == pyra->d.right_e.color &&
-		pyra->d.top.color == pyra->d.bottom_e.color;
-}
-
-//converts the internal string used to represent an algorithm to a nice pretty formatted user-readable string
-//this uses standard WCA algorithmic notation for pyraminxes
-void outputSolution(const char* solution)
-{
-	//create a buffer
-	const size_t size = sizeof(char) * strlen(solution) * 3 + 1;
-	char* outp = (char*)malloc(size);
-	if (outp == NULL)
-		return; //if the allocation failed, return
-	outp[0] = 0; //set to null-terminated
-
-	for (int i = 0; (unsigned int)i < strlen(solution); i++)
-	{
-		//convert internal moves to more human-readable moves
-		switch(solution[i])
-		{
-		case 'l':
-			strcat(outp, "L ");
-			break;
-		case 'L':
-			strcat(outp, "L' ");
-			break;
-		case 'u':
-			strcat(outp, "U ");
-			break;
-		case 'U':
-			strcat(outp, "U' ");
-			break;
-		case 'r':
-			strcat(outp, "R ");
-			break;
-		case 'R':
-			strcat(outp, "R' ");
-			break;
-		case 'b':
-			strcat(outp, "B ");
-			break;
-		case 'B':
-			strcat(outp, "B' ");
-			break;
-		default:
-			break;
-		}
-	}
-	
-	//print the algorithm
-	printf("Found solution: %s\n", outp);
-	free(outp); //free
-}
-
 //converts an integer to a base N integer
 //this works in 3 conditions:
 //1. you don't mind the output being in reverse order (so 10 to base 8 is 21 not 12)
@@ -165,49 +167,57 @@ void outputSolution(const char* solution)
 //comments omitted because I feel it's a relatively self-explanatory base conversion function that needs no further explanation
 void convertBase(long long int numb, char* outp, int base)
 {
-	if (numb != 0)
+	if (numb)
 	{
-		register int pos = 0, div, mod;
+		register int div, mod;
 	
 		switch(base)
 		{
+				int i;
 			case 8:
-				while (numb)
+				#pragma GCC unroll 22
+				for (i = 0; i < 22; i++)
 				{
+					if (!numb) goto cb_8e;
 					mod = numb & 7;
 					numb >>= 3;
-					outp[pos++] = mod | 48;
+					outp[i] = mod | 48;
 				}
-				outp[pos] = 0;
+				cb_8e: outp[i] = 0;
 				return;
 			case 6:
-				while (numb)
+				#pragma GCC unroll 32
+				for (i = 0; i < 32; i++)
 				{
+					if (!numb) goto cb_6e;
 					div = numb / 6;
 					mod = numb - (div * 6);
-					outp[pos] = mod | 48;
+					outp[i] = mod | 48;
 					numb = div;
-					pos++;
 				}
-				outp[pos] = 0;
+				cb_6e: outp[i] = 0;
 				return;
 			case 4:
-				while (numb)
+				#pragma GCC unroll 32
+				for (i = 0; i < 32; i++)
 				{
+					if (!numb) goto cb_4e;
 					mod = numb & 3;
 					numb >>= 2;
-					outp[pos++] = mod | 48;
+					outp[i] = mod | 48;
 				}
-				outp[pos] = 0;
+				cb_4e: outp[i] = 0;
 				return;
 			case 2:
-				while (numb)
+				#pragma GCC unroll 64
+				for (i = 0; i < 64; i++)
 				{
+					if (!numb) goto cb_2e;
 					mod = numb & 1;
 					numb >>= 1;
-					outp[pos++] = mod | 48;
+					outp[i] = mod | 48;
 				}
-				outp[pos] = 0;
+				cb_2e: outp[i] = 0;
 				return;
 		}
 	}
@@ -222,9 +232,11 @@ void convertBase(long long int numb, char* outp, int base)
 bool isRedundant(const char* alg)
 {
 	int len = strlen(alg);
+	
 	for (int i = 0; i < len - 1; i++)
 	{
-		if (tolower(alg[i]) == tolower(alg[i + 1]))
+		int diff = alg[i] - alg[i + 1];
+		if (diff == 0 || diff == -32 || diff == 32)
 			return true;
 	}
 	
@@ -241,39 +253,40 @@ void solvePuzzle(Puzzle* pyra, int maxMoves, const char* sidesUsed)
 	//we create a local copy everything so that we don't fight over memory
 	#pragma omp parallel firstprivate(pyra, maxMoves, sidesUsed, associations)
 	{
-		bool in_length = true; //boolean to check if we're under or equal to the maximum algorithm length
 		long long int turn = (long long int)omp_get_thread_num(); //get the thread number. this will be used to calculate an algorithm
 #ifdef DEBUG
 		int oldlen = 0; //old algorithm length (for debugging purposes)
 #endif
 		
 		long long int num_threads = omp_get_num_threads();
+		int base = strlen(sidesUsed) * 2;
 		
 		//while we're under or equal to maximum algorithm length
-		while (in_length)
+		for (;;)
 		{
 			//create a temporary pyraminx to perform an algorithm on
 			Puzzle temppyra = *pyra;
 			//convert the turn variable to an base N integer (where N is the number of possible turns we can make)
 			char baseXstr[100];
-			convertBase(turn, baseXstr, (int)strlen(sidesUsed) * 2);
+			convertBase(turn, baseXstr, base);
+			
+			int algLen = strlen(baseXstr);
 			
 #ifdef DEBUG
 			//if we've moved from n-length algorithms to n+1-length algorithms, alert the user that this thread is done with n-length algorithms
-			if (oldlen < (int)strlen(baseXstr))
+			if (oldlen < algLen)
 			{
 				printf("Thread %d finished searching moves of length %d\n", omp_get_thread_num(), oldlen);
-				oldlen = (int)strlen(baseXstr);
+				oldlen = algLen;
 			}
 #endif
 			//if we've exceeded maximum algorithm length, break
 			//this use of a flag/continue is to avoid a goto
 			//while I honestly would much prefer a goto, I've had professors in the past criticize me for even very conservative goto use
 			//want to avoid the risk of getting counted off
-			if (strlen(baseXstr) > (size_t)maxMoves)
+			if (algLen > maxMoves)
 			{
-				in_length = false;
-				continue;
+				break;
 			}
 			
 			//convert the base N string to a string of moves
@@ -298,10 +311,10 @@ void solvePuzzle(Puzzle* pyra, int maxMoves, const char* sidesUsed)
 			//this condition is because base N integers can NEVER start with a 0 (or end in a 0, since my base converter outputs mirrored)
 			//because of this, algorithms can never end in certain moves (the move associated with the number 0)
 			//this is a hack to make sure we're exhausting the totality of the solution space
-			if (baseXstr[strlen(baseXstr) - 1] == associations[1])
+			if (baseXstr[algLen- 1] == associations[1])
 			{
 				temppyra = *pyra;
-				baseXstr[strlen(baseXstr) - 1] = associations[0];
+				baseXstr[algLen - 1] = associations[0];
 				performSolve(baseXstr, &temppyra);
 			}
 
