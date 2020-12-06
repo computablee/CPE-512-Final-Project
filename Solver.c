@@ -31,11 +31,11 @@ char* createAssociations(const char* sidesUsed)
 //this converts a base N integer to a sequence of moves to apply to the pyraminx, based on the associations string
 void convertMoves(char* numb, const char* associations)
 {
-	for (int i = 0; (unsigned int)i < strlen(numb); i++)
-	{
-		char chr[2] = { numb[i], 0 }; //create a string containing the single character of the place in *numb to convert
-		numb[i] = associations[atoi(chr)]; //convert to a move based on associations (note: itoa is not in gcc, but atoi is??)
-	}
+	int len = strlen(numb);
+	
+	#pragma omp simd
+	for (int i = 0; i < len; i++)
+		numb[i] = associations[numb[i] - 48];
 }
 
 //checks if the puzzle is solved
@@ -122,21 +122,37 @@ void outputSolution(const char* solution)
 //comments omitted because I feel it's a relatively self-explanatory base conversion function that needs no further explanation
 void convertBase(long long int numb, char* outp, int base)
 {
-	int pos = 0;
 	if (numb == 0)
 	{
 		outp[0] = '0';
 		outp[1] = 0;
 		return;
 	}
+	
+	register int pos = 0;
+	
 	while (numb > 0)
 	{
-		outp[pos] = (numb % base) + 48;
-		numb -= numb % base;
-		numb /= base;
+		register int div = numb / base;
+		register int mod = numb - (div * base);
+		outp[pos] = mod + 48;
+		numb -= mod;
+		numb = div;
 		pos++;
 	}
 	outp[pos] = 0;
+}
+
+bool isRedundant(const char* alg)
+{
+	int len = strlen(alg);
+	for (int i = 0; i < len - 1; i++)
+	{
+		if (tolower(alg[i]) == tolower(alg[i + 1]))
+			return true;
+	}
+	
+	return false;
 }
 
 //solve the puzzle
@@ -152,6 +168,8 @@ void solvePuzzle(Puzzle* pyra, int maxMoves, const char* sidesUsed)
 		bool in_length = true; //boolean to check if we're under or equal to the maximum algorithm length
 		long long int turn = (long long int)omp_get_thread_num(); //get the thread number. this will be used to calculate an algorithm
 		int oldlen = 0; //old algorithm length (for debugging purposes)
+		
+		long long int num_threads = omp_get_num_threads();
 		
 		//while we're under or equal to maximum algorithm length
 		while (in_length)
@@ -182,6 +200,15 @@ void solvePuzzle(Puzzle* pyra, int maxMoves, const char* sidesUsed)
 			
 			//convert the base N string to a string of moves
 			convertMoves(baseXstr, associations);
+			
+			//if the solve contains redundant moves like X X' or X X X, then ignore and continue
+			if (isRedundant(baseXstr))
+			{
+				//add the number of threads
+				turn += num_threads;
+				//continue searching
+				continue;
+			}
 
 #ifdef HARDDEBUG
 			//if we're SERIOUSLY debugging this program, output the algorithm we're trying
@@ -201,7 +228,7 @@ void solvePuzzle(Puzzle* pyra, int maxMoves, const char* sidesUsed)
 			}
 
 			//add the number of threads
-			turn += (long long int)omp_get_num_threads();
+			turn += num_threads;
 		}
 	}
 
