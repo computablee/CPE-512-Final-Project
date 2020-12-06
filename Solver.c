@@ -176,7 +176,7 @@ void convertBase(long long int numb, char* outp, int base)
 				{
 					mod = numb & 7;
 					numb >>= 3;
-					outp[pos++] = mod + 48;
+					outp[pos++] = mod | 48;
 				}
 				outp[pos] = 0;
 				return;
@@ -185,7 +185,7 @@ void convertBase(long long int numb, char* outp, int base)
 				{
 					div = numb / 6;
 					mod = numb - (div * 6);
-					outp[pos] = mod + 48;
+					outp[pos] = mod | 48;
 					numb = div;
 					pos++;
 				}
@@ -196,7 +196,7 @@ void convertBase(long long int numb, char* outp, int base)
 				{
 					mod = numb & 3;
 					numb >>= 2;
-					outp[pos++] = mod + 48;
+					outp[pos++] = mod | 48;
 				}
 				outp[pos] = 0;
 				return;
@@ -205,7 +205,7 @@ void convertBase(long long int numb, char* outp, int base)
 				{
 					mod = numb & 1;
 					numb >>= 1;
-					outp[pos++] = mod + 48;
+					outp[pos++] = mod | 48;
 				}
 				outp[pos] = 0;
 				return;
