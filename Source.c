@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include <omp.h>
 #include <stdbool.h>
+#include <unistd.h>
 
 //this function gets a user input and returns a color
 Color getColor()
