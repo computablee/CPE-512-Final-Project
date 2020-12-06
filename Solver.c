@@ -129,16 +129,44 @@ void convertBase(long long int numb, char* outp, int base)
 		return;
 	}
 	
-	register int pos = 0;
+	register int pos = 0, div, mod;
 	
-	while (numb > 0)
+	switch(base)
 	{
-		register int div = numb / base;
-		register int mod = numb - (div * base);
-		outp[pos] = mod + 48;
-		numb -= mod;
-		numb = div;
-		pos++;
+		case 2:
+			while (numb)
+			{
+				mod = numb & 1;
+				numb >>= 1;
+				outp[pos++] = mod + 48;
+			}
+			break;
+		case 4:
+			while (numb)
+			{
+				mod = numb & 3;
+				numb >>= 2;
+				outp[pos++] = mod + 48;
+			}
+			break;
+		case 6:
+			while (numb)
+			{
+				div = numb / 6;
+				mod = numb - (div * 6);
+				outp[pos] = mod + 48;
+				numb = div;
+				pos++;
+			}
+			break;
+		case 8:
+			while (numb)
+			{
+				mod = numb & 7;
+				numb >>= 3;
+				outp[pos++] = mod + 48;
+			}
+			break;
 	}
 	outp[pos] = 0;
 }
