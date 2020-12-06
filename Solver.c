@@ -164,7 +164,10 @@ void performSolve(char* solvestr, Puzzle* temppyra)
 //2. you can guarantee that the base is <10
 //3. input is positive
 //I meet all of these conditions in this program, so this algorithm is very concise
-//comments omitted because I feel it's a relatively self-explanatory base conversion function that needs no further explanation
+
+//you are not expected to understand this, this has been highly optimized through hours of fine tuning
+//this function alone is about the most efficient code I have ever written in my life
+//uncommented
 void convertBase(long long int numb, char* outp, int base)
 {
 	if (numb)
@@ -229,17 +232,20 @@ void convertBase(long long int numb, char* outp, int base)
 	}
 }
 
+//checks if an algorithm is redundant
 bool isRedundant(const char* alg)
 {
-	int len = strlen(alg);
-	
-	for (int i = 0; i < len - 1; i++)
+	//iterate through the strong
+	for (int i = 0; alg[i + 1]; i++)
 	{
+		//get difference of two moves
 		int diff = alg[i] - alg[i + 1];
+		//if they are the same move, or are inverses of each other, alg is redundant
 		if (diff == 0 || diff == -32 || diff == 32)
 			return true;
 	}
 	
+	//alg is not redundant, calculate
 	return false;
 }
 
@@ -258,18 +264,23 @@ void solvePuzzle(Puzzle* pyra, int maxMoves, const char* sidesUsed)
 		int oldlen = 0; //old algorithm length (for debugging purposes)
 #endif
 		
+		//save the number of threads in a variable to avoid unnecessary function calls
 		long long int num_threads = omp_get_num_threads();
+		
+		//precompute the base for later base conversions
 		int base = strlen(sidesUsed) * 2;
 		
-		//while we're under or equal to maximum algorithm length
+		//convert the turn variable to an base N integer (where N is the number of possible turns we can make)
+		char baseXstr[100];
+		
+		//wforever
 		for (;;)
 		{
 			//create a temporary pyraminx to perform an algorithm on
 			Puzzle temppyra = *pyra;
-			//convert the turn variable to an base N integer (where N is the number of possible turns we can make)
-			char baseXstr[100];
 			convertBase(turn, baseXstr, base);
 			
+			//precompute the alg len so we don't have to call strlen more than necessary
 			int algLen = strlen(baseXstr);
 			
 #ifdef DEBUG
@@ -281,13 +292,8 @@ void solvePuzzle(Puzzle* pyra, int maxMoves, const char* sidesUsed)
 			}
 #endif
 			//if we've exceeded maximum algorithm length, break
-			//this use of a flag/continue is to avoid a goto
-			//while I honestly would much prefer a goto, I've had professors in the past criticize me for even very conservative goto use
-			//want to avoid the risk of getting counted off
 			if (algLen > maxMoves)
-			{
 				break;
-			}
 			
 			//convert the base N string to a string of moves
 			convertMoves(baseXstr, associations);
