@@ -165,54 +165,58 @@ void outputSolution(const char* solution)
 //comments omitted because I feel it's a relatively self-explanatory base conversion function that needs no further explanation
 void convertBase(long long int numb, char* outp, int base)
 {
-	if (numb == 0)
+	if (numb != 0)
 	{
+		register int pos = 0, div, mod;
+	
+		switch(base)
+		{
+			case 8:
+				while (numb)
+				{
+					mod = numb & 7;
+					numb >>= 3;
+					outp[pos++] = mod + 48;
+				}
+				outp[pos] = 0;
+				return;
+			case 6:
+				while (numb)
+				{
+					div = numb / 6;
+					mod = numb - (div * 6);
+					outp[pos] = mod + 48;
+					numb = div;
+					pos++;
+				}
+				outp[pos] = 0;
+				return;
+			case 4:
+				while (numb)
+				{
+					mod = numb & 3;
+					numb >>= 2;
+					outp[pos++] = mod + 48;
+				}
+				outp[pos] = 0;
+				return;
+			case 2:
+				while (numb)
+				{
+					mod = numb & 1;
+					numb >>= 1;
+					outp[pos++] = mod + 48;
+				}
+				outp[pos] = 0;
+				return;
+		}
+	}
+	else
+	{	
 		outp[0] = '0';
 		outp[1] = 0;
 		return;
 	}
-	
-	register int pos = 0, div, mod;
-	
-	switch(base)
-	{
-		case 2:
-			while (numb)
-			{
-				mod = numb & 1;
-				numb >>= 1;
-				outp[pos++] = mod + 48;
-			}
-			break;
-		case 4:
-			while (numb)
-			{
-				mod = numb & 3;
-				numb >>= 2;
-				outp[pos++] = mod + 48;
-			}
-			break;
-		case 6:
-			while (numb)
-			{
-				div = numb / 6;
-				mod = numb - (div * 6);
-				outp[pos] = mod + 48;
-				numb = div;
-				pos++;
-			}
-			break;
-		case 8:
-			while (numb)
-			{
-				mod = numb & 7;
-				numb >>= 3;
-				outp[pos++] = mod + 48;
-			}
-			break;
-	}
-	
-	outp[pos] = 0;
 }
 
 bool isRedundant(const char* alg)
