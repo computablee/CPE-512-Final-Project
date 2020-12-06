@@ -11,6 +11,7 @@ bool solved(Puzzle* pyra);
 void outputSolution(const char* solution);
 inline void performSolve(char* solvestr, Puzzle* pyra);
 void convertBase(long long int numb, char* outp, int base);
+bool isRedundant(const char* baseXstr);
 
 //performs a solve based on a puzzle and a solve string
 inline void performSolve(char* solvestr, Puzzle* temppyra)
