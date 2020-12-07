@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <x86intrin.h>
+#define likely(x)   __builtin_expect(!!(x), 1)
+#define unlikely(x) __builtin_expect(!!(x), 0)
 //#define DEBUG
 //#define HARDDEBUG
 
@@ -37,7 +39,7 @@ void outputSolution(const char* solution)
 	int len = strlen(solution);
 	//create a buffer
 	const size_t size = sizeof(char) * len * 3 + 1;
-	char* outp = (char*)malloc(size);
+	char outp[size];
 	if (outp == NULL)
 		return; //if the allocation failed, return
 	outp[0] = 0; //set to null-terminated
@@ -78,15 +80,12 @@ void outputSolution(const char* solution)
 	
 	//print the algorithm
 	printf("Found solution: %s\n", outp);
-	free(outp); //free
 }
 
 //this converts a base N integer to a sequence of moves to apply to the pyraminx, based on the associations string
 void convertMoves(char* numb, const char* associations)
 {
-	int len = strlen(numb);
-	
-	for (int i = 0; i < len; i++)
+	for (int i = 0; numb[i]; i++)
 		numb[i] = associations[numb[i] - 48];
 }
 
@@ -118,11 +117,15 @@ bool solved(Puzzle* pyra)
 //performs a solve based on a puzzle and a solve string
 void performSolve(char* solvestr, Puzzle* temppyra)
 {
+	char* solvestrcopy = solvestr;
 	//iterate through the solve string
-	for (int i = 0; (unsigned int)i < strlen(solvestr); i++)
+	#pragma GCC unroll 20
+	for (int i = 0; i < 100; i++)
 	{
+		//if we've run out of moves, early exit loop
+		if (!*solvestrcopy) goto ps_exit;
 		//perform the moves
-		switch (solvestr[i])
+		switch (*solvestrcopy)
 		{
 		case 'l':
 			l(temppyra);
@@ -151,8 +154,10 @@ void performSolve(char* solvestr, Puzzle* temppyra)
 		default:
 			break;
 		}
+		solvestrcopy++;
 	}
-
+	
+ps_exit:
 	//if solved, output solution in a human-readable format
 	if (solved(temppyra))
 		outputSolution(solvestr);
@@ -168,7 +173,7 @@ void performSolve(char* solvestr, Puzzle* temppyra)
 //you are not expected to understand this, this has been highly optimized through hours of fine tuning
 //this function alone is about the most efficient code I have ever written in my life
 //uncommented
-void convertBase(long long int numb, char* outp, int base)
+void convertBase(long long int numb, char* outp, int base, int* len)
 {
 	if (numb)
 	{
@@ -187,10 +192,11 @@ void convertBase(long long int numb, char* outp, int base)
 					outp[i] = mod | 48;
 				}
 				cb_8e: outp[i] = 0;
+				*len = i;
 				return;
 			case 6:
-				#pragma GCC unroll 32
-				for (i = 0; i < 32; i++)
+				#pragma GCC unroll 25
+				for (i = 0; i < 25; i++)
 				{
 					if (!numb) goto cb_6e;
 					div = numb / 6;
@@ -199,6 +205,7 @@ void convertBase(long long int numb, char* outp, int base)
 					numb = div;
 				}
 				cb_6e: outp[i] = 0;
+				*len = i;
 				return;
 			case 4:
 				#pragma GCC unroll 32
@@ -210,6 +217,7 @@ void convertBase(long long int numb, char* outp, int base)
 					outp[i] = mod | 48;
 				}
 				cb_4e: outp[i] = 0;
+				*len = i;
 				return;
 			case 2:
 				#pragma GCC unroll 64
@@ -221,6 +229,7 @@ void convertBase(long long int numb, char* outp, int base)
 					outp[i] = mod | 48;
 				}
 				cb_2e: outp[i] = 0;
+				*len = i;
 				return;
 		}
 	}
@@ -233,10 +242,10 @@ void convertBase(long long int numb, char* outp, int base)
 }
 
 //checks if an algorithm is redundant
-bool isRedundant(const char* alg)
+bool isRedundant(const char* alg, int algLen)
 {
-	//iterate through the strong
-	for (int i = 0; alg[i + 1]; i++)
+	//iterate through the string
+	for (int i = algLen - 2; i >= 0; i--)
 	{
 		//get difference of two moves
 		int diff = alg[i] - alg[i + 1];
@@ -273,15 +282,23 @@ void solvePuzzle(Puzzle* pyra, int maxMoves, const char* sidesUsed)
 		//convert the turn variable to an base N integer (where N is the number of possible turns we can make)
 		char baseXstr[100];
 		
-		//wforever
+		//create a temporary pyraminx to perform an algorithm on
+		Puzzle temppyra;
+		
+		//cache this info so we don't have to compute it later
+		char border = associations[1], replacement = associations[0];
+		
+		//we'll also be caching alg len
+		int algLen = 0;
+		
+		//forever
 		for (;;)
 		{
-			//create a temporary pyraminx to perform an algorithm on
-			Puzzle temppyra = *pyra;
-			convertBase(turn, baseXstr, base);
+			//copy the pyra
+			temppyra = *pyra;
 			
-			//precompute the alg len so we don't have to call strlen more than necessary
-			int algLen = strlen(baseXstr);
+			//convert the int to a base N string
+			convertBase(turn, baseXstr, base, &algLen);
 			
 #ifdef DEBUG
 			//if we've moved from n-length algorithms to n+1-length algorithms, alert the user that this thread is done with n-length algorithms
@@ -300,7 +317,7 @@ void solvePuzzle(Puzzle* pyra, int maxMoves, const char* sidesUsed)
 			convertMoves(baseXstr, associations);
 			
 			//if the solve contains redundant moves like X X' or X X X, then ignore and continue
-			if (!isRedundant(baseXstr))
+			if (!isRedundant(baseXstr, algLen))
 			{
 #ifdef HARDDEBUG
 				//if we're SERIOUSLY debugging this program, output the algorithm we're trying
@@ -310,7 +327,7 @@ void solvePuzzle(Puzzle* pyra, int maxMoves, const char* sidesUsed)
 				//perform the solve
 				performSolve(baseXstr, &temppyra);
 				
-				if (baseXstr[algLen - 1] != associations[1])
+				if (baseXstr[algLen - 1] != border)
 				{
 					//add the number of threads
 					turn += num_threads;
@@ -322,7 +339,7 @@ void solvePuzzle(Puzzle* pyra, int maxMoves, const char* sidesUsed)
 					//because of this, algorithms can never end in certain moves (the move associated with the number 0)
 					//this is a hack to make sure we're exhausting the totality of the solution space
 					temppyra = *pyra;
-					baseXstr[algLen - 1] = associations[0];
+					baseXstr[algLen - 1] = replacement;
 					performSolve(baseXstr, &temppyra);
 					
 					//add the number of threads

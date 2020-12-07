@@ -9,6 +9,6 @@ char* createAssociations(const char* sidesUsed);
 void convertMoves(char* numb, const char* associations);
 bool solved(Puzzle* pyra);
 void outputSolution(const char* solution);
-void convertBase(long long int numb, char* outp, int base);
-bool isRedundant(const char* baseXstr);
+void convertBase(long long int numb, char* outp, int base, int* len);
+bool isRedundant(const char* alg, int algLen);
 void performSolve(char* solvestr, Puzzle* temppyra);
