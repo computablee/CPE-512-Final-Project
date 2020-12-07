@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-fopenmp -Ofast -funroll-loops -Werror -Wall -fPIE
+CFLAGS=-fopenmp -Ofast -funroll-loops -Werror -Wall -fPIE -march=haswell
 
 main: Pyra.o Solver.o Source.o
 	$(CC) $(CFLAGS) -o Program Pyra.o Solver.o Source.o
