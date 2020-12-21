@@ -1,4 +1,4 @@
-# CPE-512-Final-Project
+# Pyraminx Algorithm Finder
 Final project for CPE 512 at UAH.
 
 This is a Pyraminx solver (but can be more generally used as a Pyraminx algorithm finder). A pyraminx is a twisty puzzle with 4 sides and 4 axes, and is a fairly simple puzzle to solve. This project allows a user to input a permutation of the puzzle, and find all of the solutions under a maximum move count `N`.
